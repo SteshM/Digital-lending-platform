@@ -1,6 +1,9 @@
 package com.example.digitalLendingPlatform.services;
 
-public interface LoanService {
+import com.example.digitalLendingPlatform.wrappers.LoanRequestDTO;
+import com.example.digitalLendingPlatform.wrappers.ResponseDTO;
 
+public interface LoanService {
+ public ResponseDTO requestLoan( LoanRequestDTO loanRequestDTO);
 
 }

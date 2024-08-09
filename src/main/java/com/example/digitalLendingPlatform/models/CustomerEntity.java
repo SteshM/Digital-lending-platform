@@ -5,6 +5,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,8 @@ public class CustomerEntity extends BaseEntity{
     private long maxQualification;
     private String nationalId;
     private String residentialAddress;
+    private long active;
 
     @OneToMany
-    List<CustomerEntity>customers;
+    List<LoanEntity>loans;
 }
