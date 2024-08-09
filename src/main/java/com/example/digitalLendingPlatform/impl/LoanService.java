@@ -23,23 +23,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class LoanService{
-
     public final UniversalResponse universalResponse;
     private final DataService dataService;
     public final SystemConfigs systemConfigs;
 
-    private LoanEntity createLoan(LoanRequestDTO loanRequestDTO, LoanOfferEntity loanOffer) throws JsonProcessingException {
-        ModelMapper modelMapper = new ModelMapper();
-        LoanEntity loan = modelMapper.map(loanRequestDTO,LoanEntity.class);
-        loan.setLoanOfferEntity(loanOffer);
-        loan.setLoanDate(new Date());
-        loan.setLoanStatus("Received");
-        loan.setActive(1);
-        log.info("Created loan {}", new ObjectMapper().writeValueAsString(loan));
-        return loan;
-
-    }
-
+    /**
+     * Created by Stesh
+     * created on 10/08/2024
+     * This method provides a list of loan offers to a customer
+     * @param id the customer id
+     * @return response dto
+     */
     public ResponseDTO loanOffers(long id){
         ModelMapper modelMapper = new ModelMapper();
         CustomerEntity customer = dataService.findCustomerById(id);
@@ -55,7 +49,13 @@ public class LoanService{
         return universalResponse.successResponse("Loan offers",loanOfferEntityList);
     }
 
-    
+
+    /**
+     * A customer sends a loan request and the request is granted based on their maximum allowable amount
+     * @param loanRequestDTO this is the requestDTO
+     * @return response dto
+     * @throws JsonProcessingException the exception
+     */
 
     public ResponseDTO requestLoan(LoanRequestDTO loanRequestDTO) throws JsonProcessingException {
         ModelMapper modelMapper = new ModelMapper();
@@ -76,6 +76,26 @@ public class LoanService{
             return universalResponse.failedResponse(00,"Could not fund account",null);
         }
         return universalResponse.failedResponse(00,"Requested amount \"+requestedPrinciple+\" is greater than allowed principle \"+loanOffer.getAmount()",null);
+    }
+
+    /**
+     * This method creates a loan
+     * @param loanRequestDTO this is the request dto
+     * @param loanOffer the param
+     * @return response dto
+     * @throws JsonProcessingException the exception
+     */
+
+    private LoanEntity createLoan(LoanRequestDTO loanRequestDTO, LoanOfferEntity loanOffer) throws JsonProcessingException {
+        ModelMapper modelMapper = new ModelMapper();
+        LoanEntity loan = modelMapper.map(loanRequestDTO,LoanEntity.class);
+        loan.setLoanOfferEntity(loanOffer);
+        loan.setLoanDate(new Date());
+        loan.setLoanStatus("Received");
+        loan.setActive(1);
+        log.info("Created loan {}", new ObjectMapper().writeValueAsString(loan));
+        return loan;
+
     }
 
     private boolean fundAccount(double amount){
