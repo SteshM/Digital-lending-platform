@@ -11,7 +11,9 @@ import java.util.Date;
 @Getter
 @Table(name = "loan")
 public class LoanEntity extends BaseEntity{
+    private long loanId;
     private Date loanDate;
+    private double loanPrinciple;
     private String loanStatus;
     private long Active;
 

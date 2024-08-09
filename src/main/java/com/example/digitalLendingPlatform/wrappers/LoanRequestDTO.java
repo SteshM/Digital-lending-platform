@@ -10,16 +10,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanRequestDTO {
-    private String fullName ;
-    private String email;
-    private String phoneNo;
-    private Date dateOfBirth;
-    private long maxQualification;
-    private String nationalId;
-    private String residentialAddress;
-    private long loanAmount;
-    private long interestRate;
-    private long tenure;
-    private Date loanDate;
+    private long loanOfferId ;
+    private double loanPrinciple;
+    
+  
 
 }

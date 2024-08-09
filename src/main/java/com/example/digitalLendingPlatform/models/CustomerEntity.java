@@ -15,11 +15,12 @@ import java.util.List;
 @Entity
 @Table(name = "customer")
 public class CustomerEntity extends BaseEntity{
+    private long customerId;
     private String fullName ;
     private String email;
     private String phoneNo;
     private Date dateOfBirth;
-    private long maxQualification;
+    private float maxQualification;
     private String nationalId;
     private String residentialAddress;
     private long active;

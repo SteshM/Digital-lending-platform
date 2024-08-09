@@ -12,13 +12,12 @@ import lombok.Setter;
 @Getter
 @Table(name = "loan_product")
 public class LoanProduct extends BaseEntity{
+    private long loanProductId;
     private String loanProductName;
     private double maxAllowableLimit;
     private long interest;
     private long active;
+    private long tenure;
 
 
-    @OneToOne()
-    @JoinColumn(name = "tenureId")
-    private TenureEntity tenureEntity;
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Table(name = "loan_offer")
 public class LoanOfferEntity extends BaseEntity {
+    private long loanOfferId;
     private double amount;
     private long active;
 
