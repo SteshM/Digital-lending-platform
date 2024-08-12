@@ -6,9 +6,7 @@ import com.example.digitalLendingPlatform.models.LoanEntity;
 import com.example.digitalLendingPlatform.models.LoanOfferEntity;
 import com.example.digitalLendingPlatform.services.DataService;
 import com.example.digitalLendingPlatform.utilities.UniversalResponse;
-import com.example.digitalLendingPlatform.wrappers.LoanDTO;
-import com.example.digitalLendingPlatform.wrappers.LoanRequestDTO;
-import com.example.digitalLendingPlatform.wrappers.ResponseDTO;
+import com.example.digitalLendingPlatform.wrappers.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +35,9 @@ public class LoanService{
      */
     public ResponseDTO loanOffers(long id){
         ModelMapper modelMapper = new ModelMapper();
-        CustomerEntity customer = dataService.findCustomerById(id);
+        Optional<CustomerEntity> customer = dataService.findById(id);
         log.info("About to fetch loan offers for a customer");
-        var loanOffers = dataService.fetchLoanOfferByCustomer(customer);
+        var loanOffers = dataService.fetchLoanOfferByCustomer(customer.get());
         List<LoanOfferEntity>loanOfferEntityList = loanOffers
                 .stream()
                 .map(offerEntity -> {
@@ -63,14 +62,14 @@ public class LoanService{
         var loanOffer = dataService.fetchLoanOfferById(loanRequestDTO.getLoanOfferId());
         log.info("About to apply for Loan:{}",new ObjectMapper().writeValueAsString(loanOffer));
         var requestedPrinciple = loanRequestDTO.getLoanPrinciple();
-        if (this.isAmountEligible(loanOffer.getAmount(), requestedPrinciple)){
+        if (this.isAmountEligible(loanOffer.get().getAmount(), requestedPrinciple)){
             log.info("Amount is eligible, proceed to fund the account");
             LoanEntity loan = this.createLoan(loanRequestDTO,loanOffer);
             dataService.saveLoan(loan);
             if (this.fundAccount(requestedPrinciple)){
                 loan.setLoanStatus("Disbursed");
                 dataService.saveLoan(loan);
-                var loanEntity = modelMapper.map(loan,LoanDTO.class);
+                var loanEntity = modelMapper.map(loan, LoanDTO.class);
                 return universalResponse.successResponse("Success",loanEntity);
             }
             return universalResponse.failedResponse(00,"Could not fund account",null);
@@ -86,10 +85,10 @@ public class LoanService{
      * @throws JsonProcessingException the exception
      */
 
-    private LoanEntity createLoan(LoanRequestDTO loanRequestDTO, LoanOfferEntity loanOffer) throws JsonProcessingException {
+    private LoanEntity createLoan(LoanRequestDTO loanRequestDTO, Optional<LoanOfferEntity> loanOffer) throws JsonProcessingException {
         ModelMapper modelMapper = new ModelMapper();
         LoanEntity loan = modelMapper.map(loanRequestDTO,LoanEntity.class);
-        loan.setLoanOfferEntity(loanOffer);
+        loan.setLoanOfferEntity(loanOffer.get());
         loan.setLoanDate(new Date());
         loan.setLoanStatus("Received");
         loan.setActive(1);
@@ -108,4 +107,20 @@ public class LoanService{
     }
 
 
+    public ResponseDTO createCustomer(CustomerDTO customerDTO) {
+        ModelMapper modelMapper = new ModelMapper();
+        CustomerEntity customer = new CustomerEntity();
+        customer.setFullName(customerDTO.getFullName());
+        customer.setEmail(customerDTO.getEmail());
+        customer.setNationalId(customerDTO.getNationalId());
+        customer.setDateOfBirth(customerDTO.getDateOfBirth());
+        customer.setMaxQualification(customerDTO.getMaxQualification());
+        customer.setPhoneNo(customerDTO.getPhoneNo());
+        customer.setResidentialAddress(customerDTO.getResidentialAddress());
+        customer.setActive(1);
+        customer.setCreatedBy(customerDTO.getCreatedBy());
+        var savedCustomer = dataService.saveCustomer(customer);
+        var customerResDTO = modelMapper.map(savedCustomer, CustomerResDTO.class);
+        return universalResponse.successResponse("Success",customerResDTO);
+    }
 }

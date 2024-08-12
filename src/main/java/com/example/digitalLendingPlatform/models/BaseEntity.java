@@ -26,9 +26,9 @@ public class BaseEntity {
     private String modifiedBy;
     private Date lastActivity = new Date();
 
-    @Column(name = "softDelete", columnDefinition = "char(1) default 0")
-    @JsonIgnore
-    public boolean softDelete;
+//    @Column(name = "softDelete", columnDefinition = "char(1) default 0")
+//    @JsonIgnore
+//    public boolean softDelete;
 
 
 

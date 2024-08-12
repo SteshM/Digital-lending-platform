@@ -10,5 +10,5 @@ public interface LoanOfferRepo extends JpaRepository<LoanOfferEntity,Long> {
 
     List<LoanOfferEntity> findByCustomerEntity(CustomerEntity customerEntity);
 
-    LoanOfferEntity findByLoanOfferId(long loanOfferId);
+    LoanOfferEntity findById(long id);
 }

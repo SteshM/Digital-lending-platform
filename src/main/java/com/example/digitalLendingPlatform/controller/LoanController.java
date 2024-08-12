@@ -1,7 +1,8 @@
 package com.example.digitalLendingPlatform.controller;
 import com.example.digitalLendingPlatform.impl.LoanService;
-import com.example.digitalLendingPlatform.wrappers.LoanDTO;
+import com.example.digitalLendingPlatform.wrappers.CustomerDTO;
 import com.example.digitalLendingPlatform.wrappers.LoanRequestDTO;
+import com.example.digitalLendingPlatform.wrappers.RequestDTOs;
 import com.example.digitalLendingPlatform.wrappers.ResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoanController {
 private final LoanService loanService;
 
-@GetMapping("/loan-offers")
+   @GetMapping("/loan-offers")
     public ResponseDTO loanOffers(@PathVariable int id){
     return loanService.loanOffers(id);
 }
@@ -23,6 +24,11 @@ private final LoanService loanService;
     @PostMapping("/request-loan")
     public ResponseDTO requestLoan(@RequestBody LoanRequestDTO loanRequestDTO) throws JsonProcessingException {
         return loanService.requestLoan(loanRequestDTO);
+    }
+
+    @PostMapping("/customer")
+    public ResponseDTO createCustomer(@RequestBody CustomerDTO customerDTO){
+       return loanService.createCustomer(customerDTO);
     }
 
 }

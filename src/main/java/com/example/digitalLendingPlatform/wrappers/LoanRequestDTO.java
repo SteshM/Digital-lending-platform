@@ -1,18 +1,15 @@
 package com.example.digitalLendingPlatform.wrappers;
 
-import lombok.*;
-
-import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class LoanRequestDTO {
     private long loanOfferId ;
     private double loanPrinciple;
-    
-  
+
+
+
 
 }
