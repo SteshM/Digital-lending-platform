@@ -3,8 +3,10 @@ package com.example.digitalLendingPlatform.services;
 import com.example.digitalLendingPlatform.models.CustomerEntity;
 import com.example.digitalLendingPlatform.models.LoanEntity;
 import com.example.digitalLendingPlatform.models.LoanOfferEntity;
+import com.example.digitalLendingPlatform.models.LoanProduct;
 import com.example.digitalLendingPlatform.repositories.CustomerRepo;
 import com.example.digitalLendingPlatform.repositories.LoanOfferRepo;
+import com.example.digitalLendingPlatform.repositories.LoanProductRepo;
 import com.example.digitalLendingPlatform.repositories.LoanRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +19,11 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class DataService {
-    private final CustomerRepo customerRepo;
     private final LoanRepo loanRepo;
     private final LoanOfferRepo loanOfferRepo;
+    private final CustomerRepo customerRepo;
+    private final LoanProductRepo loanProductRepo;
 
-
-    public Optional<CustomerEntity> findById(long id){
-        return customerRepo.findById(id);
-
-    }
 
     public List<LoanOfferEntity> fetchLoanOfferByCustomer(CustomerEntity customerEntity) {
          return loanOfferRepo.findByCustomerEntity(customerEntity);
@@ -39,7 +37,12 @@ public class DataService {
         loanRepo.save(loan);
     }
 
-    public CustomerEntity saveCustomer(CustomerEntity customer) {
-        return customerRepo.save(customer);
+
+    public Optional<CustomerEntity> findById(long id) {
+        return customerRepo.findById(id);
+    }
+
+    public List<LoanProduct> findAllOffers() {
+        return loanProductRepo.findAll();
     }
 }

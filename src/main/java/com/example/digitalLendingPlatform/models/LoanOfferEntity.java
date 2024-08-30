@@ -2,15 +2,17 @@ package com.example.digitalLendingPlatform.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "loan_offer")
+@ToString
 public class LoanOfferEntity extends BaseEntity {
     private long id;
     private double amount;
-    private long active;
+    private long active = 1;
 
     @OneToOne()
     @JoinColumn(name = "loanProductId")

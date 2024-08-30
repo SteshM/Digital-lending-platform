@@ -12,7 +12,7 @@ import java.util.Date;
 @Table(name = "loan")
 public class LoanEntity extends BaseEntity{
     private long id;
-    private Date loanDate;
+    private Date loanDate = new Date();
     private double loanPrinciple;
     private String loanStatus;
     private long Active;
