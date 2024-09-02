@@ -21,7 +21,7 @@ private final LoanService loanService;
 }
 
     @PostMapping("/request-loan")
-    public ResponseDTO requestLoan(@RequestBody LoanRequestDTO loanRequestDTO)  {
+    public ResponseDTO requestLoan(@RequestBody LoanRequestDTO loanRequestDTO) {
         return loanService.requestLoan(loanRequestDTO);
     }
 

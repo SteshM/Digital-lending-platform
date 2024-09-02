@@ -9,7 +9,6 @@ import com.example.digitalLendingPlatform.services.DataService;
 import com.example.digitalLendingPlatform.utilities.UniversalResponse;
 import com.example.digitalLendingPlatform.wrappers.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -35,6 +34,7 @@ public class LoanService{
      * @return response dto
      */
     public ResponseDTO loanOffers(long customerId){
+        ModelMapper modelMapper = new ModelMapper();
         Optional<CustomerEntity> customer = dataService.findById(customerId);
         log.info("About to fetch loan offers for a customer");
         log.info("Customer: {}", customer.get().getMaxQualification());
@@ -64,42 +64,36 @@ public class LoanService{
 
 
     public ResponseDTO requestLoan(LoanRequestDTO loanRequestDTO) {
+        ModelMapper modelMapper = new ModelMapper();
         log.info("Request Loan Payload: {}", loanRequestDTO);
-
         var loanOffer = dataService.fetchLoanOfferById(loanRequestDTO.getLoanOfferId());
-        if (loanOffer.isEmpty()) {
-            return universalResponse.failedResponse(00, "Loan offer not found", null);
-        }
-
         log.info("About to apply for Loan: {}", loanOffer);
         var requestedPrinciple = loanRequestDTO.getLoanPrinciple();
 
-        if (!isAmountEligible(loanOffer.get().getAmount(), requestedPrinciple)) {
-            return universalResponse.failedResponse(00, "Requested amount " + requestedPrinciple + " is greater than allowed principle " + loanOffer.get().getAmount(), null);
+        if(this.isAmountEligible(loanOffer.get().getAmount(), requestedPrinciple)){
+            log.info("Amount is eligible. Proceed to record loan and fund the account");
+            var loanEntity = this.createLoan(loanRequestDTO, loanOffer);
+            dataService.saveLoan(loanEntity);
+
+            if (this.fundAccount(requestedPrinciple)){
+                loanEntity.setLoanStatus("Disbursed");
+                dataService.saveLoan(loanEntity);
+                var loan = modelMapper.map(loanEntity, LoanDTO.class);
+                return universalResponse.successResponse("loan request was successful",loan);
+            }
+            return universalResponse.failedResponse(01,"Could not fund account",null);
         }
-
-        log.info("Amount is eligible, proceed to fund the account");
-        LoanEntity loan = createLoan(loanRequestDTO, loanOffer);
-        dataService.saveLoan(loan);
-
-        if (!fundAccount(requestedPrinciple)) {
-            return universalResponse.failedResponse(00, "Could not fund account", null);
-        }
-
-        loan.setLoanStatus("Disbursed");
-        dataService.saveLoan(loan);
-
-        LoanDTO loanEntity = new ModelMapper().map(loan, LoanDTO.class);
-        return universalResponse.successResponse("Success", loanEntity);
+        return universalResponse.failedResponse(01,"Requested amount  is greater than allowed principle ",null);
     }
 
 
+
+        
     /**
      * This method creates a loan
      * @param loanRequestDTO this is the request dto
      * @param loanOffer the param
      * @return response dto
-     * @throws JsonProcessingException the exception
      */
 
     private LoanEntity createLoan(LoanRequestDTO loanRequestDTO, Optional<LoanOfferEntity> loanOffer){
